@@ -1,0 +1,95 @@
+{% import "macros/wtf.html" as wtf %}
+
+<!DOCTYPE html>
+<html{% block html_attribs %} lang="en"{% endblock %}>
+    {%- block html %}
+    <head>
+        <link type="image/x-icon" href="/static/images/favicon.ico" rel="shortcut icon">
+        {%- block head %}
+        <meta charset="utf-8">
+        <title>{% block title %}XBLSE{% endblock %}</title>
+        {%- block meta %}
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="google" content="notranslate">
+        <meta http-equiv="Content-Language" content="en" />
+        {%- endblock %}
+
+        {%- block style %}
+            <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap.min.css">
+            <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css">
+        {%- endblock style %}
+
+        {% if ASSETS_USE_CDN %}
+            <script src="//cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.min.js" type="text/javascript"></script>
+        {% else %}
+            <script src="/static/dependencies/head.min.js" type="text/javascript"></script>
+        {% endif %}
+
+        <script type="text/javascript">
+            head.js(
+                "//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js",
+                "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/js/bootstrap.min.js",
+            );
+
+        </script>
+        {%- block favicons %}
+        {%- endblock %}
+
+    {%- endblock %}
+    </head>
+    <body>
+    {%- block body %}
+        {%- block body_content %}
+        <div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="/" class="navbar-brand">XBLSE</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    {% if current_user.has_role('admin') or current_user.has_role('manager') %}
+                        <li{% if 'admin' == request.endpoint %} class="active"{% endif %}>
+                            <a href="/admin">Admin</a>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="nav navbar-nav pull-right">
+                {% if current_user.is_active() %}
+                    <li><a href={{url_for_security('logout')}}>Logout</a></li>
+                {% else %}
+                    <li><a href={{url_for_security('login')}}>Login</a></li>
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        {%- block body_inner%}
+        <div class="container" style="margin-top: 60px">
+            <div id="messages-wrap">
+                <div id="messages">
+                {% for category, msg in get_flashed_messages(with_categories=true) %}
+                    {% if loop.first %}
+                        <br />
+                    {% endif %}
+                    <div class="alert alert-warning">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+
+
+            {%- block content %}
+            {% endblock content %}
+        </div>
+        {%- endblock body_inner %}
+        {%- endblock body_content %}
+        {% block end_scripts %}
+        {% endblock end_scripts %}
+    {%- endblock body %}
+    </body>
+    {%- endblock html %}
+</html>
